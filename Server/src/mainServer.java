@@ -40,6 +40,7 @@ public class mainServer {
 			}else if(type.equals("1")) {
 				oos.writeUTF("accepted");
 				for (String i : list_file) {
+					// making
 				}
 			}
 		}
