@@ -22,40 +22,51 @@ public class mainServer {
 		System.out.println("IP server: "+svr.getInetAddress().getHostAddress());
 		System.out.println("Port server: "+svr.getLocalPort());
 		while (true) {
-			System.out.println("CHỜ KẾT NỐI TỚI...");
+			System.out.println("Waiting for connection...");
 			sk=svr.accept();
 			
-			System.out.println("DA NHAN 1 MAY!");
+			//System.out.println("DA NHAN 1 MAY!");
 			ois=new ObjectInputStream(sk.getInputStream());
 			String type=ois.readObject().toString();
-			System.out.println(type);
+			//System.out.println(type);
 
 			oos=new ObjectOutputStream(sk.getOutputStream());
 			oos.writeObject("accepted");
 			// if sk is node
 			if(type.equals("0")) {
+				oos.writeObject("accepted");
 				System.out.println("Node connected!!!");
 				sk.getInetAddress().toString();
 				sk.getPort();
 				
 				String file_name=ois.readObject().toString();
 
-				System.out.println(file_name);
 				while (!file_name.equals("end")) {
-					System.out.println(file_name);
-					list_file.add(sk.getInetAddress().toString()+"_"+sk.getPort()+"_"+file_name);
+					System.out.println("Received file name: "+file_name);
+					
+					list_file.add(sk.getInetAddress().toString()+"\t"+sk.getPort()+"\t"+file_name);
+					//System.out.println(sk.getInetAddress().toString()+"_"+sk.getPort()+"_"+file_name);
+					
 					oos.writeObject("was");
-					System.out.println(sk.getInetAddress().toString()+"_"+sk.getPort()+"_"+file_name);
 					file_name=ois.readObject().toString();
 				}
 				list_node.add(sk);
-				oos.close();
-				ois.close();
-			}else if(type.equals("1")) {
-				for (String i : list_file) {
-					// making
-				}
+			}else if(type.equals("1")) {				
+				System.out.print("Cliend connected!!!\t");
+				
+				for (Socket sk1 : list_node)
+					for (String str : args)
+						if(!sk1.isClosed() && str.split("\t")[1].equals(String.valueOf(sk1.getPort()))) {
+							oos.writeObject(str);
+									
+							ois.readObject();
+						}
+				
+				System.out.println("Sent all file name and IP + port (of node) to client");
 			}
+
+			oos.close();
+			ois.close();
 		}
 	}
 }
