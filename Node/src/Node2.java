@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Node;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -13,7 +12,7 @@ import java.net.Socket;
  *
  * @author Tu Huynh
  */
-public class Node1{
+public class Node2{
     
     //Liá»‡t kÃª Ä‘Æ°á»�ng dáº«n cá»§a táº¥t cáº£ cÃ¡c file trong thÆ° má»¥c
     private void PrintDirectoryChildPath(File dir) {
@@ -37,22 +36,18 @@ public class Node1{
     }
     
     public static void main(String argv[]) throws Exception {    
-    	File dir = new File(link);
-        if(dir.exists()) {
-        	System.out.println("not found foldel");
-        	return;
-        }
         
-        String link = "Node\\Data\\Node1";
-        String port = "1742";
+        String link = "D:\\GitHub\\JavaSocketDownloadFile\\Node\\Node\\Data\\Node2";
+        String port = "2222";
         String modifiedSentence;
 
-        Socket clientSocket = new Socket("localhost", Integer.valueOf(port));
+        Socket clientSocket = new Socket("localhost", 6789);
         DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());        
         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
 
         outToServer.writeUTF(port + '\n');
-        Node1 a = new Node1();
+        Node2 a = new Node2();
+        File dir = new File(link);
         String[] Name = a.BuiltDirectoryChildName(dir);
         for(String name : Name){
             outToServer.writeUTF(name + '\n');
