@@ -85,7 +85,7 @@ public class mainServer {
 				for (String str : list_file)
 					for (Socket sk1 : list_node)
 						if(!sk1.isClosed() && str.split("\t")[1].equals(String.valueOf(sk1.getPort()))) {
-							oos.writeObject(str.split("\t")[0]+"\t"+str.split("\t")[1]+"\t"+str.split("\t")[3]);
+							oos.writeObject(str.split("\t")[0]+"\t"+str.split("\t")[2]+"\t"+str.split("\t")[3]);
 									
 							ois.readObject();
 						}
