@@ -4,9 +4,12 @@
  * and open the template in the editor.
  */
 
+
 import java.io.*;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 /**
  *
@@ -14,15 +17,15 @@ import java.net.Socket;
  */
 public class Node3{
     
-    //Liá»‡t kÃª Ä‘Æ°á»�ng dáº«n cá»§a táº¥t cáº£ cÃ¡c file trong thÆ° má»¥c
+    //Liệt kê đường dẫn của tất cả các file trong thư mục
     private void PrintDirectoryChildPath(File dir) {
         File[] children = dir.listFiles();
         for (File child : children) {
-            System.out.println(child.getAbsolutePath()); //getAbsolutePath: Láº¥y Ä‘Æ°á»�ng dáº«n ra
+            System.out.println(child.getAbsolutePath()); //getAbsolutePath: Lấy đường dẫn ra
         }
     }
 
-    //Liá»‡t kÃª tÃªn cá»§a táº¥t cáº£ cÃ¡c file trong thÆ° má»¥c 
+    //Liệt kê tên của tất cả các file trong thư mục 
     private void PrintDirectoryChildName(File dir) {
         String[] paths = dir.list();
         for (String path : paths) {
@@ -35,29 +38,73 @@ public class Node3{
         return  paths;
     }
     
+    
     public static void main(String argv[]) throws Exception {    
-        
-        String sentence = "D:\\GitHub\\JavaSocketDownloadFile\\Node\\Node\\Data\\Node3";
-        String port = "3333";
-        String modifiedSentence;
-
-        Socket clientSocket = new Socket("localhost", 6789);
-        DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
-        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-
-        outToServer.writeBytes(port + '\n');
-        Node3 a = new Node3();
-        File dir = new File(sentence);
-        String[] Name = a.BuiltDirectoryChildName(dir);
-        for(String name : Name){
-            outToServer.writeBytes(name + '\n');
+        String link = "Data\\Node3";
+        File dir = new File(link);
+        if(!dir.exists()) {
+        	System.out.println("not found foldel");
+        	System.out.println("Created folder save file new: "+(dir.mkdirs()==true?"success":"failse"));
+        	//return;
         }
+        Socket clientSocket=null;
+        try {
+            clientSocket = new Socket(InetAddress.getLocalHost().getHostName(),1742);
+            ObjectOutputStream oos=new ObjectOutputStream(clientSocket.getOutputStream());
+            
+            oos.writeObject("0");
+            
+            ObjectInputStream ois=new ObjectInputStream(clientSocket.getInputStream());
+            String serverSend=ois.readObject().toString();
+            System.out.println(serverSend);
+            Node3 a = new Node3();
+            String[] nameFile = a.BuiltDirectoryChildName(dir);
+            for(String name : nameFile){
+            	oos.writeObject(name);
+            	
+            	if(ois.readObject().toString()=="was")
+            	System.out.println("ĐÃ GỬI FILE "+name);
+            }
+            oos.writeObject("end");
+            
+            ois.close();
+            oos.close();
+            while(true) {
+            	
+            }
+		} catch (Exception e) {
+			e.printStackTrace();
+	        clientSocket.close();
+		}
+
         
-//        modifiedSentence = inFromServer.readLine();
-//        System.out.println("SERVER: " + modifiedSentence);
-//        modifiedSentence = inFromServer.readLine();
-//        System.out.println("        " + modifiedSentence);
-        
-        clientSocket.close();
     }
 }
+/*/
+public class Node1 {
+
+    public static void main(String[] args) throws UnknownHostException, IOException, ClassNotFoundException, InterruptedException{
+        //get the localhost IP address, if server is running on some other IP, you need to use that
+        InetAddress host = InetAddress.getLocalHost();
+        Socket socket = null;
+        ObjectOutputStream oos = null;
+        ObjectInputStream ois = null;
+        for(int i=0; i<5;i++){
+            //establish socket connection to server
+            socket = new Socket(host.getHostName(), 9876);
+            //write to socket using ObjectOutputStream
+            oos = new ObjectOutputStream(socket.getOutputStream());
+            System.out.println("Sending request to Socket Server");
+            if(i==4)oos.writeObject("exit");
+            else oos.writeObject(""+i);
+            //read the server response message
+            ois = new ObjectInputStream(socket.getInputStream());
+            String message = (String) ois.readObject();
+            System.out.println("Message: " + message);
+            //close resources
+            ois.close();
+            oos.close();
+            //Thread.sleep(10000);
+        }
+    }
+}*/

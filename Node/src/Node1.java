@@ -17,15 +17,15 @@ import java.net.UnknownHostException;
  */
 public class Node1{
     
-    //LiÃ¡Â»â€¡t kÃƒÂª Ã„â€˜Ã†Â°Ã¡Â»ï¿½ng dÃ¡ÂºÂ«n cÃ¡Â»Â§a tÃ¡ÂºÂ¥t cÃ¡ÂºÂ£ cÃƒÂ¡c file trong thÃ†Â° mÃ¡Â»Â¥c
+    //Liệt kê đường dẫn của tất cả các file trong thư mục
     private void PrintDirectoryChildPath(File dir) {
         File[] children = dir.listFiles();
         for (File child : children) {
-            System.out.println(child.getAbsolutePath()); //getAbsolutePath: LÃ¡ÂºÂ¥y Ã„â€˜Ã†Â°Ã¡Â»ï¿½ng dÃ¡ÂºÂ«n ra
+            System.out.println(child.getAbsolutePath()); //getAbsolutePath: Lấy đường dẫn ra
         }
     }
 
-    //LiÃ¡Â»â€¡t kÃƒÂª tÃƒÂªn cÃ¡Â»Â§a tÃ¡ÂºÂ¥t cÃ¡ÂºÂ£ cÃƒÂ¡c file trong thÃ†Â° mÃ¡Â»Â¥c 
+    //Liệt kê tên của tất cả các file trong thư mục 
     private void PrintDirectoryChildName(File dir) {
         String[] paths = dir.list();
         for (String path : paths) {
@@ -40,7 +40,7 @@ public class Node1{
     
     
     public static void main(String argv[]) throws Exception {    
-        String link = "Data\\Folder1";
+        String link = "Data\\Node1";
         File dir = new File(link);
         if(!dir.exists()) {
         	System.out.println("not found foldel");
