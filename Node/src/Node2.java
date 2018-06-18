@@ -43,7 +43,7 @@ public class Node2{
         String link = "Data\\Node2";
         File dir = new File(link);
         if(!dir.exists()) {
-        	System.out.println("not found foldel");
+        	System.out.println("Not found foldel");
         	System.out.println("Created folder save file new: "+(dir.mkdirs()==true?"success":"failse"));
         	//return;
         }
