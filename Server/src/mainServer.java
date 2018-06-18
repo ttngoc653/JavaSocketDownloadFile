@@ -98,6 +98,8 @@ public class mainServer {
                             }
                         }
                     }
+                    
+                    oos.writeObject("end");
 
                     System.out.println("Sent all file name and IP + port (UDP of node) to client");
                 }
