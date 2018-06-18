@@ -26,3 +26,7 @@ hs_err_pid*
 /Node/Node/nbproject/private/
 /Server/Server/build/
 /Node/Node/build/
+/Server/build/
+/Node/build/
+/Node/nbproject/private/
+/Client/nbproject/private/
