@@ -37,6 +37,8 @@ public class mainServer {
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		svr = new ServerSocket(1742);
 		Socket sk=null;
+		int no_file_from_none=0;
+		
 		list_node = new ArrayList<>();
 		list_file = new ArrayList<>();
 		System.out.println("IP server: "+svr.getInetAddress().getHostAddress());
@@ -65,8 +67,9 @@ public class mainServer {
 				
 				// nhận tên file đầu tiên
 				file_name=ois.readObject().toString();
-
+				
 				while (!file_name.equals("end")) {
+					no_file_from_none++;
 					System.out.println("Received file name: "+file_name);
 					
 					list_file.add(sk.getInetAddress().toString()+"\t"+sk.getPort()+"\t"+port_udp_of_note+"\t"+file_name);
@@ -78,7 +81,10 @@ public class mainServer {
 				
 				softListFileName();
 				
-				list_node.add(sk);
+				if(no_file_from_none>0)
+					list_node.add(sk);
+				
+				no_file_from_none=0;
 			}else if(type.equals("1")) {
 				System.out.print("Cliend connected!!!\t");
 
