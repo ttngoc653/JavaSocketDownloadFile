@@ -66,7 +66,7 @@ public class mainServer {
                     sk.getPort();
 
                     // nhận tên file đầu tiên
-                    file_name = ois.readObject().toString();
+                    file_name = (String) ois.readObject();
 
                     while (!file_name.equals("end")) {
                         no_file_from_none++;
@@ -76,7 +76,7 @@ public class mainServer {
                         //System.out.println(sk.getInetAddress().toString()+"_"+sk.getPort()+"_"+file_name);
 
                         oos.writeObject("was");
-                        file_name = ois.readObject().toString();
+                        file_name = (String) ois.readObject();
                     }
 
                     softListFileName();
