@@ -15,8 +15,7 @@ public class mainServer {
     private static ObjectInputStream ois = null;
     private static ObjectOutputStream oos = null;
     private static String file_name = null;
-    private static String port_udp_of_note = null;
-
+    
     private static boolean softListFileName() {
         try {
             String temp = "";
@@ -66,7 +65,7 @@ public class mainServer {
                     sk.getPort();
 
                     // nhận tên file đầu tiên
-                    file_name = (String) ois.readObject();
+                    file_name = ois.readObject().toString();
 
                     while (!file_name.equals("end")) {
                         no_file_from_none++;
@@ -76,7 +75,7 @@ public class mainServer {
                         //System.out.println(sk.getInetAddress().toString()+"_"+sk.getPort()+"_"+file_name);
 
                         oos.writeObject("was");
-                        file_name = (String) ois.readObject();
+                        file_name = ois.readObject().toString();
                     }
 
                     softListFileName();
@@ -101,53 +100,16 @@ public class mainServer {
                     
                     oos.writeObject("end");
 
-                    System.out.println("Sent all file name and IP + port (UDP of node) to client");
+                    System.out.println("Receive all file name and IP + port to client");
                 }
 
                 oos.close();
                 ois.close();
             } catch (Exception e) {
                 e.printStackTrace();
-            }
+            }finally {
+				sk.close();
+			}
         }
     }
 }
-/*/
-public class mainServer {
-    
-    //static ServerSocket variable
-    private static ServerSocket server;
-    //socket server port on which it will listen
-    private static int port = 9876;
-    private static ObjectInputStream ois=null;
-    private static ObjectOutputStream oos=null;
-    public static void main(String args[]) throws IOException, ClassNotFoundException{
-        //create the socket server object
-        server = new ServerSocket(port);
-        //keep listens indefinitely until receives 'exit' call or program terminates
-        while(true){
-            System.out.println("Waiting for client request");
-            //creating socket and waiting for client connection
-            Socket socket = server.accept();
-            //read from socket to ObjectInputStream object
-            ois = new ObjectInputStream(socket.getInputStream());
-            //convert ObjectInputStream object to String
-            String message = (String) ois.readObject();
-            System.out.println("Message Received: " + message);
-            //create ObjectOutputStream object
-            oos = new ObjectOutputStream(socket.getOutputStream());
-            //write object to Socket
-            oos.writeObject("Hi Client "+message);
-            //close resources
-            ois.close();
-            oos.close();
-            socket.close();
-            //terminate the server if client sends exit request
-            if(message.equalsIgnoreCase("exit")) break;
-        }
-        System.out.println("Shutting down Socket server!!");
-        //close the ServerSocket object
-        server.close();
-    }
-    
-}*/
