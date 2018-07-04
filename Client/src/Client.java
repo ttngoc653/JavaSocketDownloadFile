@@ -19,6 +19,8 @@ public class Client {
 	private static Socket client;
 	private static int PIECES_OF_FILE_SIZE=1024 * 32;
 	private static DatagramSocket clientSocket;
+	private static BufferedOutputStream bos;
+	private static Scanner input;
 
 	/*
 	private void hienThiVaLuaChonDowloardFile() {
@@ -60,17 +62,17 @@ public class Client {
 		}
 	
 	}*/
-	private static void ConnectNode(TenFile fileChonDowloard) throws Exception {
+	private static void ConnectNode(String fileChonDowloard) throws Exception {
 		// TODO Auto-generated method stub
 		 byte[] sendData = new byte[1024];
 		 byte[] receiveData = new byte[1024];
 		 byte[] receiveData2 = new byte[PIECES_OF_FILE_SIZE];
 //		    DatagramPacket receivePacket;
-		 sendData=fileChonDowloard.getTenfile().getBytes();
+		 sendData=fileChonDowloard.split("\t")[2].getBytes();
 		 clientSocket = new DatagramSocket();
-        // Táº¡o gÃ³i tin gá»­i Ä‘i thÃ´ng qua IP address vÃ  port báº¥t kÃ¬ > 1023
+        // Tao goi tin goi di thang qua IP address va  port bat ky > 1023
         InetAddress IPAddress = InetAddress.getLocalHost();
-        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, fileChonDowloard.getPort());
+        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, Integer.parseInt(fileChonDowloard.split("\t")[1]));
         clientSocket.send(sendPacket);
         
         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
@@ -90,24 +92,24 @@ public class Client {
         }
         else
         {
-        	  System.out.println("File name:null ");
+        	  System.out.println("File name: null ");
         }
         // get file content
        
         File fileReceive = new File(fileInfo.getDestinationDirectory());
-        BufferedOutputStream bos = new BufferedOutputStream(
+        bos = new BufferedOutputStream(
                 new FileOutputStream(fileReceive));
         // write pieces of file
         for (int i = 0; i < (fileInfo.getPiecesOfFile() - 1); i++) {
             receivePacket = new DatagramPacket(receiveData2, receiveData2.length, 
-            		IPAddress, fileChonDowloard.getPort());
+            		IPAddress, Integer.parseInt(fileChonDowloard.split("\t")[1]));
             clientSocket.receive(receivePacket);
             System.out.println("Receiving file..."+(i+1));
             bos.write(receiveData2, 0, PIECES_OF_FILE_SIZE);
         }
         // write last bytes of file
         receivePacket = new DatagramPacket(receiveData2, receiveData2.length, 
-        		IPAddress, fileChonDowloard.getPort());
+        		IPAddress, Integer.parseInt(fileChonDowloard.split("\t")[1]));
         clientSocket.receive(receivePacket);
         System.out.println("Receiving file Done...");
         bos.write(receiveData2, 0, fileInfo.getLastByteLength());
@@ -142,27 +144,20 @@ public class Client {
 			
             
             for (int i = 0; i < list_file_info.size(); i++) {
-				System.out.println(i+". "+list_file_info.get(i).toString().split("\t")[2]);
+				System.out.println(i+". "+list_file_info.get(i).toString());
 			}
             
             System.out.println("HAY CHON SO TUONG UNG DE DOWNLOAD FILE: ");
-            Scanner input=new Scanner(System.in);
+            input = new Scanner(System.in);
             int number=input.nextInt();
             
             while(true) {
             	
-        		TenFile fileChonDowloard=new TenFile();
-        		for(TenFile t:list_file_info)
-        		{
-        			if(t.getStt()==number)
-        			{
-        				fileChonDowloard=t;
-        				break;
-        			}
-        		}
-        		System.out.println("Äang Dowloard file "+fileChonDowloard.getTenfile());
+        		//TenFile fileChonDowloard=new TenFile();
+            	String file_choose = (String) list_file_info.get(number);
+        		System.out.println("Downloading file "+file_choose.split("\t")[2]);
         		try {
-        			ConnectNode(fileChonDowloard);
+        			ConnectNode(file_choose);
         		} catch (Exception e) {
         			// TODO Auto-generated catch block
         			e.printStackTrace();

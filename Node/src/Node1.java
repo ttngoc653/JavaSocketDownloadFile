@@ -25,12 +25,13 @@ public class Node1 {
 	private  byte[][] fileBytess;
 	private int count;
 	private FileInfo fileInfo;
+	private BufferedInputStream bis;
 	
 	public String GetFileInfor(String file_name) throws Exception
 	{
 		File fileSend = new File(dir()+"\\"+file_name);
         InputStream inputStream = new FileInputStream(fileSend);
-        BufferedInputStream bis = new BufferedInputStream(inputStream);
+        bis = new BufferedInputStream(inputStream);
        // inetAddress = InetAddress.getByName(serverHost);
         byte[] bytePart = new byte[PIECES_OF_FILE_SIZE];
         
