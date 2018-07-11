@@ -13,30 +13,29 @@ import java.net.Socket;
 import com.google.gson.Gson;
 
 public class Node1 {
-	private static Integer getPort() {
-		return 1742;
-	}
-	private static String dir() {
-		return "Data\\Node1";
-	}
-	// udp
-	private static final int PIECES_OF_FILE_SIZE = 1024 * 32;
-	private static DatagramSocket serverSocket;
-	private static  byte[][] fileBytess;
-	private static int count;
-	private static FileInfo fileInfo;
-	private static BufferedInputStream bis;
 
-    private static Socket clientSocket = null;
-	
-	public static String GetFileInfor(String file_name) throws Exception
-	{
-		File fileSend = new File(dir()+"\\"+file_name);
+    private static Integer getPort() {
+        return 1742;
+    }
+
+    private static String dir() {
+        return "Data\\Node1";
+    }
+    // udp
+    private static final int PIECES_OF_FILE_SIZE = 1024 * 32;
+    private DatagramSocket serverSocket;
+    private byte[][] fileBytess;
+    private int count;
+    private FileInfo fileInfo;
+    private BufferedInputStream bis;
+
+    public String GetFileInfor(String file_name) throws Exception {
+        File fileSend = new File(dir() + "\\" + file_name);
         InputStream inputStream = new FileInputStream(fileSend);
         bis = new BufferedInputStream(inputStream);
-       // inetAddress = InetAddress.getByName(serverHost);
+        // inetAddress = InetAddress.getByName(serverHost);
         byte[] bytePart = new byte[PIECES_OF_FILE_SIZE];
-        
+
         // get file size
         long fileLength = fileSend.length();
         System.out.println(fileLength);
@@ -49,7 +48,7 @@ public class Node1 {
         }
 
         // split file into pieces and assign to fileBytess
-         fileBytess = new byte[piecesOfFile][PIECES_OF_FILE_SIZE];
+        fileBytess = new byte[piecesOfFile][PIECES_OF_FILE_SIZE];
         count = 0;
         while (bis.read(bytePart, 0, PIECES_OF_FILE_SIZE) > 0) {
             fileBytess[count++] = bytePart;
@@ -63,82 +62,76 @@ public class Node1 {
         fileInfo.setPiecesOfFile(piecesOfFile);
         fileInfo.setLastByteLength(lastByteLength);
         fileInfo.setDestinationDirectory(file_name);
-        
-        Gson gson=new Gson();
-	    String json=gson.toJson(fileInfo);
-	    
-	    return json;
-	}
 
-	private static void MoKetNoiToiClient()
-	{
-		try {
-			System.out.println("Port client: "+clientSocket.getPort());
-		   //int count;
-			serverSocket = new DatagramSocket(clientSocket.getPort());
-		    while(true)
-		    {
-				 //InetAddress inetAddress;
-				 DatagramPacket sendPacket;
-				System.out.println("Node 1 is listening...");
-	            // nháº­n gÃ³i tin tá»« Client
-	             byte[] receiveData = new byte[1024];
-	            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-	            serverSocket.receive(receivePacket);
-			    String sentence = new String(receivePacket.getData());
-	            System.out.println("From client: " + sentence);
-	            
-	            InetAddress IPAddress = receivePacket.getAddress();
-	            int clientPort = receivePacket.getPort();
-	 
-	            //táº¡o gÃ³i tin vÃ  gá»­i Client
-	              byte[] sendData = new byte[1024];
-	              //sourcePath="data\\node1\\"+sentence.trim();
-	              //destinationDir="dowloard\\"+sentence.trim();
-	              String fileInfor=GetFileInfor(sentence);
-	              sendData = fileInfor.getBytes();
-	            DatagramPacket sendPacketdata = new DatagramPacket(sendData, sendData.length, IPAddress, clientPort);
-	            serverSocket.send(sendPacketdata);
-	            
-		        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		        ObjectOutputStream oos = new ObjectOutputStream(baos);
-		        oos.writeObject(fileInfo);
-		        sendPacket = new DatagramPacket(baos.toByteArray(), 
-		                baos.toByteArray().length,IPAddress, clientPort);
-		        serverSocket.send(sendPacket);
-	
-		        // send file content
-		        System.out.println("Sending file...");
-		        // send pieces of file
-		        for (int i = 0; i < (count - 1); i++) {
-		            sendPacket = new DatagramPacket(fileBytess[i], PIECES_OF_FILE_SIZE,
-		            		IPAddress,clientPort);
-		            serverSocket.send(sendPacket);
-		            waitMillisecond(40);
-		        }
-		        // send last bytes of file
-		        sendPacket = new DatagramPacket(fileBytess[count - 1], PIECES_OF_FILE_SIZE,
-		        		IPAddress, clientPort);
-		        serverSocket.send(sendPacket);
-		        waitMillisecond(40);
-		    	System.out.println("Sent.");
-			
-		    }
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-       
-	}
-	public static void waitMillisecond(long millisecond) {
-	    try {
-	        Thread.sleep(millisecond);
-	    } catch (InterruptedException e) {
-	        e.printStackTrace();
-	    }
-	}
-	// end udp
-	
-	/*
+        Gson gson = new Gson();
+        String json = gson.toJson(fileInfo);
+
+        return json;
+    }
+
+    public void MoKetNoiToiClient() throws Exception {
+        //int count;
+        serverSocket = new DatagramSocket(getPort());
+        while (true) {
+            //InetAddress inetAddress;
+            DatagramPacket sendPacket;
+            System.out.println("Node 1 is listening...");
+            // nháº­n gÃ³i tin tá»« Client
+            byte[] receiveData = new byte[1024];
+            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            serverSocket.receive(receivePacket);
+            String sentence = new String(receivePacket.getData());
+            System.out.println("From client: " + sentence);
+
+            InetAddress IPAddress = receivePacket.getAddress();
+            int clientPort = receivePacket.getPort();
+
+            //táº¡o gÃ³i tin vÃ  gá»­i Client
+            byte[] sendData = new byte[1024];
+            //sourcePath="data\\node1\\"+sentence.trim();
+            //destinationDir="dowloard\\"+sentence.trim();
+            String fileInfor = GetFileInfor(sentence);
+            sendData = fileInfor.getBytes();
+            DatagramPacket sendPacketdata = new DatagramPacket(sendData, sendData.length, IPAddress, clientPort);
+            serverSocket.send(sendPacketdata);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(fileInfo);
+            sendPacket = new DatagramPacket(baos.toByteArray(),
+                    baos.toByteArray().length, IPAddress, clientPort);
+            serverSocket.send(sendPacket);
+
+            // send file content
+            System.out.println("Sending file...");
+            // send pieces of file
+            for (int i = 0; i < (count - 1); i++) {
+                sendPacket = new DatagramPacket(fileBytess[i], PIECES_OF_FILE_SIZE,
+                        IPAddress, clientPort);
+                serverSocket.send(sendPacket);
+                waitMillisecond(40);
+            }
+            // send last bytes of file
+            sendPacket = new DatagramPacket(fileBytess[count - 1], PIECES_OF_FILE_SIZE,
+                    IPAddress, clientPort);
+            serverSocket.send(sendPacket);
+            waitMillisecond(40);
+            System.out.println("Sent.");
+
+        }
+
+    }
+
+    public void waitMillisecond(long millisecond) {
+        try {
+            Thread.sleep(millisecond);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+    // end udp
+
+    /*
     //Liệt kê đường dẫn của tất cả các file trong thư mục
     private void PrintDirectoryChildPath(File dir) {
         File[] children = dir.listFiles();
@@ -154,8 +147,7 @@ public class Node1 {
             System.out.println(path);
         }
     }
-	 */
-	
+     */
     private String[] BuiltDirectoryChildName(File dir) {
         String[] paths = dir.list();
         return paths;
@@ -169,6 +161,7 @@ public class Node1 {
             System.out.println("Created folder save file new: " + (dir.mkdirs() == true ? "success" : "failse"));
             //return;
         }
+        Socket clientSocket = null;
         try {
             clientSocket = new Socket(InetAddress.getLocalHost().getHostName(), getPort());
             ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
@@ -192,17 +185,19 @@ public class Node1 {
 
             ois.close();
             oos.close();
-            
+
             System.out.println("waiting client connect to...");
-            
-            MoKetNoiToiClient();
-            
+
+            while (true) {
+                // code of udp
+
+            }
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
 
             clientSocket.close();
-		}
+        }
 
     }
 }
