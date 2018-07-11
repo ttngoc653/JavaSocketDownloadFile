@@ -69,6 +69,7 @@ public class Node2{
             
             ois.close();
             oos.close();
+            System.out.println("cho client ket noi");
             while(true) {
             	
             }

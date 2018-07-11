@@ -143,7 +143,7 @@ public class Client {
             }while(!server_send.equals("end"));
 			
             
-            for (int i = 0; i < list_file_info.size(); i++) {
+            for (int i = 0; i < list_file_info.size() - 1; i++) {
 				System.out.println(i+". "+list_file_info.get(i).toString());
 			}
             
