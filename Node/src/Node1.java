@@ -21,13 +21,15 @@ public class Node1 {
 	}
 	// udp
 	private static final int PIECES_OF_FILE_SIZE = 1024 * 32;
-	private DatagramSocket serverSocket;
-	private  byte[][] fileBytess;
-	private int count;
-	private FileInfo fileInfo;
-	private BufferedInputStream bis;
+	private static DatagramSocket serverSocket;
+	private static  byte[][] fileBytess;
+	private static int count;
+	private static FileInfo fileInfo;
+	private static BufferedInputStream bis;
+
+    private static Socket clientSocket = null;
 	
-	public String GetFileInfor(String file_name) throws Exception
+	public static String GetFileInfor(String file_name) throws Exception
 	{
 		File fileSend = new File(dir()+"\\"+file_name);
         InputStream inputStream = new FileInputStream(fileSend);
@@ -68,10 +70,12 @@ public class Node1 {
 	    return json;
 	}
 
-	public void MoKetNoiToiClient() throws Exception
+	private static void MoKetNoiToiClient()
 	{
+		try {
+			System.out.println("Port client: "+clientSocket.getPort());
 		   //int count;
-			serverSocket = new DatagramSocket(getPort());
+			serverSocket = new DatagramSocket(clientSocket.getPort());
 		    while(true)
 		    {
 				 //InetAddress inetAddress;
@@ -120,10 +124,12 @@ public class Node1 {
 		    	System.out.println("Sent.");
 			
 		    }
-		
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
        
 	}
-	public void waitMillisecond(long millisecond) {
+	public static void waitMillisecond(long millisecond) {
 	    try {
 	        Thread.sleep(millisecond);
 	    } catch (InterruptedException e) {
@@ -163,7 +169,6 @@ public class Node1 {
             System.out.println("Created folder save file new: " + (dir.mkdirs() == true ? "success" : "failse"));
             //return;
         }
-        Socket clientSocket = null;
         try {
             clientSocket = new Socket(InetAddress.getLocalHost().getHostName(), getPort());
             ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
@@ -190,10 +195,8 @@ public class Node1 {
             
             System.out.println("waiting client connect to...");
             
-            while (true) {
-            	// code of udp
-            	
-            }
+            MoKetNoiToiClient();
+            
         } catch (Exception e) {
             e.printStackTrace();
         }finally {
