@@ -141,34 +141,34 @@ public class Client {
 
                 oos.writeObject(server_send);
             } while (!server_send.equals("end"));
-if(list_file_info.size()>1) {
-            for (int i = 0; i < list_file_info.size()-1; i++) {
-                System.out.println(i + ". " + list_file_info.get(i).toString());
+            
+            if(list_file_info.size()>1) {
+	            for (int i = 0; i < list_file_info.size()-1; i++) {
+	                System.out.println(i + ". " + list_file_info.get(i).toString());
+	            }
+	
+	            System.out.println("CHOOSE NUMBEER IN BEFORE FILE NAME TO DOWNLOAD FILE: ");
+	            input = new Scanner(System.in);
+	            int number = input.nextInt();
+	
+	            while (true) {
+	
+	                //TenFile fileChonDowloard=new TenFile();
+	                String file_choose = (String) list_file_info.get(number);
+	                System.out.println("Downloading file " + file_choose.split("\t")[2]);
+	                try {
+	                    ConnectNode(file_choose);
+	                } catch (Exception e) {
+	                    // TODO Auto-generated catch block
+	                    e.printStackTrace();
+	                }
+	
+	                number = Integer.parseInt(input.nextLine());
+	
+	            }
+            } else {
+            	System.out.println("SERVER ISN'T FILE!");
             }
-
-            System.out.println("HAY CHON SO TUONG UNG DE DOWNLOAD FILE: ");
-            input = new Scanner(System.in);
-            int number = input.nextInt();
-
-            while (true) {
-
-                //TenFile fileChonDowloard=new TenFile();
-                String file_choose = (String) list_file_info.get(number);
-                System.out.println("Downloading file " + file_choose.split("\t")[2]);
-                try {
-                    ConnectNode(file_choose);
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-
-                number = Integer.parseInt(input.nextLine());
-
-            }
-}
-else {
-	System.out.println("server chua co file");
-}
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }

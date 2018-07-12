@@ -131,23 +131,6 @@ public class Node1 {
     }
     // end udp
 
-    /*
-    //Liệt kê đường dẫn của tất cả các file trong thư mục
-    private void PrintDirectoryChildPath(File dir) {
-        File[] children = dir.listFiles();
-        for (File child : children) {
-            System.out.println(child.getAbsolutePath()); //getAbsolutePath: Lấy đường dẫn ra
-        }
-    }
-
-    //Liệt kê tên của tất cả các file trong thư mục 
-    private void PrintDirectoryChildName(File dir) {
-        String[] paths = dir.list();
-        for (String path : paths) {
-            System.out.println(path);
-        }
-    }
-     */
     private String[] BuiltDirectoryChildName(File dir) {
         String[] paths = dir.list();
         return paths;
@@ -178,7 +161,7 @@ public class Node1 {
                 oos.writeObject(name);
 
                 if (ois.readObject().toString().equalsIgnoreCase("was")) {
-                    System.out.println("ĐÃ GỬI FILE " + name);
+                    System.out.println("sent FILE " + name);
                 }
             }
             oos.writeObject("end");
