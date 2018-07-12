@@ -141,8 +141,8 @@ public class Client {
 
                 oos.writeObject(server_send);
             } while (!server_send.equals("end"));
-
-            for (int i = 0; i < list_file_info.size(); i++) {
+if(list_file_info.size()>1) {
+            for (int i = 0; i < list_file_info.size()-1; i++) {
                 System.out.println(i + ". " + list_file_info.get(i).toString());
             }
 
@@ -165,7 +165,10 @@ public class Client {
                 number = Integer.parseInt(input.nextLine());
 
             }
-
+}
+else {
+	System.out.println("server chua co file");
+}
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
