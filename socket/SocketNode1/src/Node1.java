@@ -26,7 +26,7 @@ import com.google.gson.Gson;
 public class Node1 {
 	public static final int PIECES_OF_FILE_SIZE = 1024 * 32;
 	public DatagramSocket serverSocket;
-	public int serverPort =111;
+	public static int serverPort =111;
 	
 	public static String sourcePath="";
 	public static String destinationDir="";
@@ -39,15 +39,19 @@ public class Node1 {
 		ArrayList<String> ds=new ArrayList<>();
 		File folder = new File(dir);
 		File[] listOfFiles = folder.listFiles();
-
+        if(listOfFiles.length>0)
+        {
+        	System.out.println("==NODE 1 đang lưu trữ các file:");
 		for (int i = 0; i < listOfFiles.length; i++) {
 			if (listOfFiles[i].isFile()) {
 				ds.add(listOfFiles[i].getName());
+				
 				System.out.println("File " + listOfFiles[i].getName());
 			} else if (listOfFiles[i].isDirectory()) {
 				System.out.println("Directory " + listOfFiles[i].getName());
 			}
 		}
+        }
 		return ds;
 	}
 	public String GetFileInfor() throws Exception
@@ -60,7 +64,7 @@ public class Node1 {
         
         // get file size
         long fileLength = fileSend.length();
-        System.out.println(fileLength);
+        System.out.println("=== dung lượng file:"+fileLength+" Byte");
         int piecesOfFile = (int) (fileLength / PIECES_OF_FILE_SIZE);
         int lastByteLength = (int) (fileLength % PIECES_OF_FILE_SIZE);
 
@@ -98,13 +102,14 @@ public class Node1 {
 		    {
 				 InetAddress inetAddress;
 				 DatagramPacket sendPacket;
-				System.out.println("Node 1 is listening...");
+				System.out.println("============Node 1 đang lắng nghe kết nối từ client...");
 	            // nhận gói tin từ Client
 	             byte[] receiveData = new byte[1024];
 	            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 	            serverSocket.receive(receivePacket);
 			    String sentence = new String(receivePacket.getData());
-	            System.out.println("From client: " + sentence);
+			    System.out.println(" ===Client kết nối thành công: " + sentence);
+	            System.out.println(" ===Client yêu cầu dowloard file: " + sentence);
 	            
 	            InetAddress IPAddress = receivePacket.getAddress();
 	            int clientPort = receivePacket.getPort();
@@ -126,7 +131,7 @@ public class Node1 {
 		        serverSocket.send(sendPacket);
 	
 		        // send file content
-		        System.out.println("Sending file...");
+		        System.out.println("=== Đang gửi File cho Client...");
 		        // send pieces of file
 		        for (int i = 0; i < (count - 1); i++) {
 		            sendPacket = new DatagramPacket(fileBytess[i], PIECES_OF_FILE_SIZE,
@@ -139,7 +144,7 @@ public class Node1 {
 		        		IPAddress, clientPort);
 		        serverSocket.send(sendPacket);
 		        waitMillisecond(40);
-		    	System.out.println("Sent.");
+		    	System.out.println("==== Đã gửi thành công.");
 			
 		    }
 		
@@ -159,7 +164,7 @@ public class Node1 {
 		Node node1=new Node(0, 111, "Node1", ds);
 		Gson gson=new Gson();
 	    String json=gson.toJson(node1);
-	    System.out.println(json);
+	   // System.out.println(json);
 	    
 	    Socket socket=null;
 	    try {
@@ -179,8 +184,13 @@ public class Node1 {
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		System.out.println("========================[NODE1]===================");
-        Node1 node1=new Node1();
+		System.out.println("================================================================================================");
+		System.out.println("                                       [NODE1 ĐANG CHẠY]");
+		System.out.println("Port node :"+Node1.serverPort);
+
+		System.out.println("================================================================================================");
+
+		Node1 node1=new Node1();
         node1.Connect();
       
 		try {

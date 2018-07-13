@@ -33,7 +33,7 @@ public class Client {
 		Node node1=new Node(1,0, "Client", null);
 		Gson gson=new Gson();
 	    String json=gson.toJson(node1);
-	    System.out.println(json);
+	  //  System.out.println(json);
 	    
 	    Socket socket=null;
 	    try {
@@ -43,7 +43,7 @@ public class Client {
 			
 			BufferedReader brNode=new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			String requestNode=brNode.readLine();
-			System.out.println(requestNode);
+		//	System.out.println(requestNode);
 			
 		    gson=new Gson();
 
@@ -52,6 +52,7 @@ public class Client {
 			if(dsNode.size()>0)
 			{
 				hienThiVaLuaChonDowloardFile();
+				
 			}
 			else
 			{
@@ -74,17 +75,17 @@ public class Client {
 		System.out.println();
 		boolean kt=true;
 
-		System.out.println("================Lựu chọn file bạn muốn dowloard!!====================");
+		System.out.println("================Hay lua chon file ban muon dowloard !!====================");
 		{
 			for(TenFile t:dsFile)
 			{
 				System.out.println(t.getStt()+"-"+t.getTenfile());
 			}
-			System.out.println("0-Thoat");
+			
 		}
 
 		int chon;
-		System.out.print("Mời Bạn Chọn :");
+		System.out.print("Moi ban chon :");
 		Scanner sc=new Scanner(System.in);
 		chon=Integer.parseInt(sc.nextLine());
 
@@ -98,7 +99,9 @@ public class Client {
 				break;
 			}
 		}
-		System.out.println("Đang Dowloard file "+fileChonDowloard.getTenfile());
+		System.out.println("============================ THONG BAO =====================");
+
+		System.out.println("====> Dang Dowloard file "+fileChonDowloard.getTenfile());
 		try {
 			ConnectNode(fileChonDowloard);
 		} catch (Exception e) {
@@ -123,17 +126,17 @@ public class Client {
         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
         clientSocket.receive(receivePacket);
         String modifiedSentence = new String(receivePacket.getData());
-        System.out.println("From server: " + modifiedSentence);
+        //System.out.println("From server: " + modifiedSentence);
         
         Gson gson=new Gson();
         FileInfo fileInfo=new FileInfo();
         java.lang.reflect.Type type=new TypeToken<FileInfo>(){}.getType();
         fileInfo=gson.fromJson(modifiedSentence.trim(),type);
         if (fileInfo != null) {
-            System.out.println("File name: " + fileInfo.getFilename());
-            System.out.println("File size: " + fileInfo.getFileSize());
-            System.out.println("Pieces of file: " + fileInfo.getPiecesOfFile());
-            System.out.println("Last bytes length: "+ fileInfo.getLastByteLength());
+            System.out.println("= Ban can dowloard file: " + fileInfo.getFilename());
+            System.out.println("= Tong dung luong la: " + fileInfo.getFileSize()+"Byte");
+           // System.out.println("Pieces of file: " + fileInfo.getPiecesOfFile());
+           // System.out.println("Last bytes length: "+ fileInfo.getLastByteLength());
         }
         else
         {
@@ -145,18 +148,20 @@ public class Client {
         BufferedOutputStream bos = new BufferedOutputStream(
                 new FileOutputStream(fileReceive));
         // write pieces of file
-        for (int i = 0; i < (fileInfo.getPiecesOfFile() - 1); i++) {
+        int m=fileInfo.getPiecesOfFile() - 1;
+        for (int i = 0; i < m; i++) {
             receivePacket = new DatagramPacket(receiveData2, receiveData2.length, 
             		IPAddress, fileChonDowloard.getPort());
             clientSocket.receive(receivePacket);
-            System.out.println("Receiving file..."+(i+1));
+            System.out.println("---Dowloard [ "+(i+1)+"/"+m+" ]");
             bos.write(receiveData2, 0, PIECES_OF_FILE_SIZE);
         }
         // write last bytes of file
         receivePacket = new DatagramPacket(receiveData2, receiveData2.length, 
         		IPAddress, fileChonDowloard.getPort());
         clientSocket.receive(receivePacket);
-        System.out.println("Receiving file Done...");
+        System.out.println("Dowloard file Done...");
+      //  System.out.println("Dowloard f...");
         bos.write(receiveData2, 0, fileInfo.getLastByteLength());
         bos.flush();
         System.out.println("Done!");
@@ -178,9 +183,32 @@ public class Client {
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		Client client=new Client();
-		client.ConnectServer();
+		System.out.println("================================================================================================");
+		System.out.println("                                       [CLIENT DANG CHAY]");
 
+		System.out.println("================================================================================================");
+		Client client=new Client();
+
+		String chon="Y";
+		do
+		{
+			client.ConnectServer();
+
+			System.out.println("Ban co muon tiep tuc [Y]:Yes or [N]:No ");
+			System.out.println("moi ban chon :");
+			Scanner sc=new Scanner(System.in);
+			chon=sc.nextLine();
+			if(chon=="N")
+			{
+				break;
+			}
+			else
+			{
+				dsFile=new ArrayList<>();
+			}
+
+		}while(true);
+		
 	}
 
 }

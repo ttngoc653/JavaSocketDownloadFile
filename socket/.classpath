@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="SocketClient/src"/>
+	<classpathentry kind="src" path="SocketNode1/src"/>
+	<classpathentry kind="src" path="SocketNode2/src"/>
+	<classpathentry kind="src" path="SocketNode3/src"/>
+	<classpathentry kind="src" path="SocketServer/src"/>
+	<classpathentry kind="lib" path="SocketClient/gson-2.2.4.jar"/>
+	<classpathentry kind="lib" path="SocketClient/NodeModel.jar"/>
+	<classpathentry kind="lib" path="SocketNode2/gson-2.2.4.jar"/>
+	<classpathentry kind="lib" path="SocketNode2/NodeModel.jar"/>
+	<classpathentry kind="lib" path="SocketNode3/gson-2.2.4.jar"/>
+	<classpathentry kind="lib" path="SocketNode3/NodeModel.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="SocketClient/bin"/>
+</classpath>

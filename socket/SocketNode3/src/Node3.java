@@ -1,25 +1,32 @@
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import com.google.gson.Gson;
 
 public class Node3 {
-
 	public static final int PIECES_OF_FILE_SIZE = 1024 * 32;
 	public DatagramSocket serverSocket;
-	public int serverPort =333;
+	public static int serverPort =333;
 	
 	public static String sourcePath="";
 	public static String destinationDir="";
@@ -29,21 +36,24 @@ public class Node3 {
 	
 	public ArrayList<String> LayDanhSachFile(String dir)
 	{
-		ArrayList<String>ds=new ArrayList<>();
+		ArrayList<String> ds=new ArrayList<>();
 		File folder = new File(dir);
 		File[] listOfFiles = folder.listFiles();
-
+        if(listOfFiles.length>0)
+        {
+        	System.out.println("==NODE 3 đang lưu trữ các file:");
 		for (int i = 0; i < listOfFiles.length; i++) {
 			if (listOfFiles[i].isFile()) {
 				ds.add(listOfFiles[i].getName());
+				
 				System.out.println("File " + listOfFiles[i].getName());
 			} else if (listOfFiles[i].isDirectory()) {
 				System.out.println("Directory " + listOfFiles[i].getName());
 			}
 		}
+        }
 		return ds;
 	}
-	
 	public String GetFileInfor() throws Exception
 	{
 		File fileSend = new File(sourcePath);
@@ -54,7 +64,7 @@ public class Node3 {
         
         // get file size
         long fileLength = fileSend.length();
-        System.out.println(fileLength);
+        System.out.println("=== dung lượng file:"+fileLength+" Byte");
         int piecesOfFile = (int) (fileLength / PIECES_OF_FILE_SIZE);
         int lastByteLength = (int) (fileLength % PIECES_OF_FILE_SIZE);
 
@@ -92,13 +102,14 @@ public class Node3 {
 		    {
 				 InetAddress inetAddress;
 				 DatagramPacket sendPacket;
-				System.out.println("Node 3 is listening...");
+				System.out.println("============Node 3 đang lắng nghe kết nối từ client...");
 	            // nhận gói tin từ Client
 	             byte[] receiveData = new byte[1024];
 	            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 	            serverSocket.receive(receivePacket);
 			    String sentence = new String(receivePacket.getData());
-	            System.out.println("From client: " + sentence);
+			    System.out.println(" ===Client kết nối thành công: " );
+	            System.out.println(" ===Client yêu cầu dowloard file: " + sentence);
 	            
 	            InetAddress IPAddress = receivePacket.getAddress();
 	            int clientPort = receivePacket.getPort();
@@ -120,7 +131,7 @@ public class Node3 {
 		        serverSocket.send(sendPacket);
 	
 		        // send file content
-		        System.out.println("Sending file...");
+		        System.out.println("=== Đang gửi File cho Client...");
 		        // send pieces of file
 		        for (int i = 0; i < (count - 1); i++) {
 		            sendPacket = new DatagramPacket(fileBytess[i], PIECES_OF_FILE_SIZE,
@@ -133,7 +144,7 @@ public class Node3 {
 		        		IPAddress, clientPort);
 		        serverSocket.send(sendPacket);
 		        waitMillisecond(40);
-		    	System.out.println("Sent.");
+		    	System.out.println("==== Đã gửi thành công.");
 			
 		    }
 		
@@ -146,7 +157,6 @@ public class Node3 {
 	        e.printStackTrace();
 	    }
 	}
-
 	public void Connect()
 	{
 		ArrayList<String>ds=new ArrayList<>();
@@ -154,7 +164,7 @@ public class Node3 {
 		Node node1=new Node(0, 333, "Node3", ds);
 		Gson gson=new Gson();
 	    String json=gson.toJson(node1);
-	    System.out.println(json);
+	   // System.out.println(json);
 	    
 	    Socket socket=null;
 	    try {
@@ -172,17 +182,24 @@ public class Node3 {
 	    
 	    
 	}
-
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		 Node3 node3=new Node3();
-	     node3.Connect();
-	     try {
-			node3.MoKetNoiToiClient();
+		System.out.println("================================================================================================");
+		System.out.println("                                       [NODE3 ĐANG CHẠY]");
+		System.out.println("Port node :"+Node3.serverPort);
+
+		System.out.println("================================================================================================");
+
+		Node3 node1=new Node3();
+        node1.Connect();
+      
+		try {
+			node1.MoKetNoiToiClient();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 	}
 
 }

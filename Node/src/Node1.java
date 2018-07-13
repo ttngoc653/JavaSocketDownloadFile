@@ -138,6 +138,7 @@ public class Node1 {
 
     public static void main(String argv[]) throws Exception {
         //String link = "Data\\Node1";
+    	 Node1 a = new Node1();
         File dir = new File(dir());
         if (!dir.exists()) {
             System.out.println("Not found foldel");
@@ -154,7 +155,7 @@ public class Node1 {
             ObjectInputStream ois = new ObjectInputStream(clientSocket.getInputStream());
             String serverSend = ois.readObject().toString();
             System.out.println(serverSend);
-            Node1 a = new Node1();
+          //  Node1 a = new Node1();
             String[] nameFile = a.BuiltDirectoryChildName(dir);
 
             for (String name : nameFile) {
