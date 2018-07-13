@@ -190,6 +190,7 @@ public class Client {
 		Client client=new Client();
 
 		String chon="Y";
+		boolean kt=true;
 		do
 		{
 			client.ConnectServer();
@@ -198,16 +199,18 @@ public class Client {
 			System.out.println("moi ban chon :");
 			Scanner sc=new Scanner(System.in);
 			chon=sc.nextLine();
-			if(chon=="N")
+			if(chon.equals("N"))
 			{
-				break;
+				kt=false;
+				System.out.println("====== KẾT THÚC ============");
 			}
 			else
 			{
+				kt=true;
 				dsFile=new ArrayList<>();
 			}
 
-		}while(true);
+		}while(kt);
 		
 	}
 

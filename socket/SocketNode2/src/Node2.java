@@ -117,7 +117,7 @@ public class Node2 {
 	            //tạo gói tin và gửi Client
 	              byte[] sendData = new byte[1024];
 	              sourcePath="data\\node2\\"+sentence.trim();
-	              destinationDir="dowloard\\"+sentence.trim();
+	              destinationDir="Socketdowloard\\"+sentence.trim();
 	              String fileInfor=GetFileInfor();
 	              sendData = fileInfor.getBytes();
 	            DatagramPacket sendPacketdata = new DatagramPacket(sendData, sendData.length, IPAddress, clientPort);
