@@ -84,30 +84,41 @@ public class Client {
 			
 		}
 
-		int chon;
 		System.out.print("Moi ban chon :");
-		Scanner sc=new Scanner(System.in);
-		chon=Integer.parseInt(sc.nextLine());
+		boolean check = true;
+		int chon;
+		do {
+			try {
+				// System.out.print("Moi ban chon :");
+				Scanner sc = new Scanner(System.in);
+				chon = Integer.parseInt(sc.nextLine());
 
+				if (chon <= 0 || chon > dsFile.size()) {
+					System.out.println("Ban chi duoc nhap stt file co hien thi");
+					check = true;
+				} else {
+					TenFile fileChonDowloard = new TenFile();
+					for (TenFile t : dsFile) {
+						if (t.getStt() == chon) {
+							fileChonDowloard = t;
+							break;
+						}
+					}
 
-		TenFile fileChonDowloard=new TenFile();
-		for(TenFile t:dsFile)
-		{
-			if(t.getStt()==chon)
-			{
-				fileChonDowloard=t;
-				break;
-			}
-		}
-		System.out.println("============================ THONG BAO =====================");
+					System.out.println("============================ THONG BAO =====================");
 
-		System.out.println("====> Dang Dowloard file "+fileChonDowloard.getTenfile());
-		try {
-			ConnectNode(fileChonDowloard);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+					System.out.println("====> Dang Dowloard file " + fileChonDowloard.getTenfile());
+					try {
+						ConnectNode(fileChonDowloard);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			} catch (Exception e) {
+				System.out.println("Ban phai nhap so nguyen");
+			}		
+		} while (check);
 	
 	}
 	private void ConnectNode(TenFile fileChonDowloard) throws Exception {
