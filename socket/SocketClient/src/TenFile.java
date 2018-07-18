@@ -1,5 +1,5 @@
 
-public class TenFile {
+public class TenFile implements Comparable<TenFile> {
 
     private int stt;
 	private int port;
@@ -8,6 +8,7 @@ public class TenFile {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
 	public TenFile(int stt, int port, String tennode, String tenfile) {
 		super();
 		this.stt = stt;
@@ -40,5 +41,10 @@ public class TenFile {
 		this.tenfile = tenfile;
 	}
 	private String tenfile;
+	@Override
+	public int compareTo(TenFile o) {
+		// TODO Auto-generated method stub
+		return this.tenfile.compareToIgnoreCase(o.getTenfile());
+	}
 	
 }

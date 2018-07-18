@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import com.google.gson.Gson;
 
@@ -27,12 +28,14 @@ public class Node3 {
 	public static final int PIECES_OF_FILE_SIZE = 1024 * 32;
 	public DatagramSocket serverSocket;
 	public static int serverPort =333;
-	
+	public static String severname="172.20.10.5";
+	String severhost="localsost";
 	public static String sourcePath="";
 	public static String destinationDir="";
 	public static FileInfo fileInfo;
 	public int count;
 	public  byte[][] fileBytess;
+	String json;
 	
 	public ArrayList<String> LayDanhSachFile(String dir)
 	{
@@ -41,6 +44,7 @@ public class Node3 {
 		File[] listOfFiles = folder.listFiles();
         if(listOfFiles.length>0)
         {
+        	System.out.println("================================= THONG BAO=====================================");
         	System.out.println("==NODE 3 đang lưu trữ các file:");
 		for (int i = 0; i < listOfFiles.length; i++) {
 			if (listOfFiles[i].isFile()) {
@@ -107,7 +111,8 @@ public class Node3 {
 	             byte[] receiveData = new byte[1024];
 	            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 	            serverSocket.receive(receivePacket);
-			    String sentence = new String(receivePacket.getData());
+			    String sentence = new String(receivePacket.getData(),"UTF-8");
+				System.out.println("================================= THONG BAO=====================================");
 			    System.out.println(" ===Client kết nối thành công: " );
 	            System.out.println(" ===Client yêu cầu dowloard file: " + sentence);
 	            
@@ -123,14 +128,10 @@ public class Node3 {
 	            DatagramPacket sendPacketdata = new DatagramPacket(sendData, sendData.length, IPAddress, clientPort);
 	            serverSocket.send(sendPacketdata);
 	            
-		        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		        ObjectOutputStream oos = new ObjectOutputStream(baos);
-		        oos.writeObject(fileInfo);
-		        sendPacket = new DatagramPacket(baos.toByteArray(), 
-		                baos.toByteArray().length,IPAddress, clientPort);
-		        serverSocket.send(sendPacket);
+//		     
 	
 		        // send file content
+	            
 		        System.out.println("=== Đang gửi File cho Client...");
 		        // send pieces of file
 		        for (int i = 0; i < (count - 1); i++) {
@@ -159,16 +160,23 @@ public class Node3 {
 	}
 	public void Connect()
 	{
-		ArrayList<String>ds=new ArrayList<>();
-		ds=LayDanhSachFile("data\\node3");
-		Node node1=new Node(0, 333, "Node3", ds);
-		Gson gson=new Gson();
-	    String json=gson.toJson(node1);
+		try {
+			String ip=InetAddress.getLocalHost().getHostAddress();
+			ArrayList<String>ds=new ArrayList<>();
+			ds=LayDanhSachFile("data\\node3");
+			Node node1=new Node(0, 333, "Node3,"+ip, ds);
+			Gson gson=new Gson();
+		     json=gson.toJson(node1);
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 	   // System.out.println(json);
 	    
 	    Socket socket=null;
 	    try {
-			socket=new Socket(InetAddress.getLocalHost().getHostName(), 1992);
+			socket=new Socket(InetAddress.getByName(severname), 1992);
 			PrintStream pstentruycap =new PrintStream(socket.getOutputStream());
 			pstentruycap.println(json);
 		} catch (UnknownHostException e) {
@@ -189,7 +197,9 @@ public class Node3 {
 		System.out.println("Port node :"+Node3.serverPort);
 
 		System.out.println("================================================================================================");
-
+		System.out.print("nhập địa chỉ ip:");
+        Scanner rc=new Scanner(System.in);
+        severname=rc.nextLine();
 		Node3 node1=new Node3();
         node1.Connect();
       
