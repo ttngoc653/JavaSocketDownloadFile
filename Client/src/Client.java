@@ -1,177 +1,235 @@
-
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.PrintStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 public class Client {
+	private static final int PIECES_OF_FILE_SIZE = 1024 * 32;
+	private DatagramSocket clientSocket;
+	public static ArrayList<TenFile>dsFile=new ArrayList<>();
+	public static int portConnect=1742;
+	public static String severname="";
+	public static String severnode;
+	public void ConnectServer()
+	{
+		Node node1=new Node(1,0, "Client", null);
+		Gson gson=new Gson();
+	    String json=gson.toJson(node1);
+	  //  System.out.println(json);
+	    
+	    Socket socket=null;
+	    try {
+			socket=new Socket(InetAddress.getByName(severname), portConnect);
+			PrintStream pstentruycap =new PrintStream(socket.getOutputStream());
+			pstentruycap.println(json);
+			
+			BufferedReader brNode=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			String requestNode=brNode.readLine();
+		//	System.out.println(requestNode);
+			
+		    gson=new Gson();
 
-    private static ArrayList<Object> list_file_info;
-    private static Socket client;
-    private static int PIECES_OF_FILE_SIZE = 1024 * 32;
-    private static DatagramSocket clientSocket;
-    private static BufferedOutputStream bos;
-    private static Scanner input;
-
-    /*
-	private void hienThiVaLuaChonDowloardFile() {
-		// TODO Auto-generated method stub
-		getAllFileName();
-		System.out.println();
-		boolean kt=true;
-
-		System.out.println("================Lá»±u chá»n file báº¡n muá»‘n dowloard!!====================");
-		{
-			for(TenFile t:dsFile)
+			java.lang.reflect.Type type=new TypeToken<ArrayList<TenFile>>(){}.getType();
+			dsFile=gson.fromJson(requestNode,type);
+			if(dsFile.size()>0)
 			{
-				System.out.println(t.getStt()+"-"+t.getTenfile());
+				hienThiVaLuaChonDowloardFile();
+				
 			}
-			System.out.println("0-Thoat");
-		}
-
-		int chon;
-		System.out.print("Má»i Báº¡n Chá»n :");
-		Scanner sc=new Scanner(System.in);
-		chon=Integer.parseInt(sc.nextLine());
-
-
-		TenFile fileChonDowloard=new TenFile();
-		for(TenFile t:dsFile)
-		{
-			if(t.getStt()==chon)
+			else
 			{
-				fileChonDowloard=t;
-				break;
+				System.out.println("danh sach file rong!!");
 			}
-		}
-		System.out.println("Äang Dowloard file "+fileChonDowloard.getTenfile());
-		try {
-			ConnectNode(fileChonDowloard);
-		} catch (Exception e) {
+			
+			} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+	}
 	
-	}*/
-    private static void ConnectNode(String fileChonDowloard) throws Exception {
-        // TODO Auto-generated method stub
-        byte[] sendData = new byte[1024];
-        byte[] receiveData = new byte[1024];
-        byte[] receiveData2 = new byte[PIECES_OF_FILE_SIZE];
-//		    DatagramPacket receivePacket;
-        sendData = fileChonDowloard.split("\t")[2].getBytes();
-        clientSocket = new DatagramSocket();
-        // Tao goi tin goi di thang qua IP address va  port bat ky > 1023
-        InetAddress IPAddress = InetAddress.getLocalHost();
-        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, Integer.parseInt(fileChonDowloard.split("\t")[1]));
-        clientSocket.send(sendPacket);
+	private void hienThiVaLuaChonDowloardFile() {
+		// TODO Auto-generated method stub
+		System.out.println();
+		boolean kt=false;;
 
+		do{
+			System.out.println("================Hay lua chon file ban muon dowloard !!====================");
+			{
+				for (int i = 0; i < dsFile.size(); i++) {
+					System.out.println("( "+String.valueOf(i+1)+"\t )---- FILE: "+dsFile.get(i).getTenfile());
+				}
+			}
+
+			int chon;
+			System.out.print("Moi ban chon :");
+			Scanner sc=new Scanner(System.in);
+			chon=Integer.parseInt(sc.nextLine());
+			int size=dsFile.size();
+			if(chon>=1 && chon<=size)
+			{
+				kt=false;
+				TenFile fileChonDowloard=dsFile.get(chon-1);
+				
+				System.out.println("============================ THONG BAO =====================");
+
+				System.out.println("====> Dang Dowloard file "+fileChonDowloard.getTenfile());
+				try {
+					ConnectNode(fileChonDowloard);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			else
+			{
+				kt=true;
+				System.out.println("gia tri ban duoc chon chi tu 1 den "+size);
+				System.out.println("xin hay chon lai !!!");
+			}
+		}while(kt);
+		
+
+
+		
+	
+	}
+	private void ConnectNode(TenFile fileChonDowloard) throws Exception {
+		// TODO Auto-generated method stub
+		 byte[] sendData = new byte[1024];
+		 byte[] receiveData = new byte[1024];
+		 byte[] receiveData2 = new byte[PIECES_OF_FILE_SIZE];
+		 String[] words=new String[10];
+		 words=fileChonDowloard.getTennode().split(",");
+		 
+			 severnode=words[1];
+		 
+		 
+//		    DatagramPacket receivePacket;
+		 sendData=fileChonDowloard.getTenfile().getBytes();
+		 clientSocket = new DatagramSocket();
+        // T?o gói tin g?i ði thông qua IP address và port b?t k? > 1023
+       InetAddress IPAddress = InetAddress.getByName(severnode);
+        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length,IPAddress, Integer.parseInt(words[2]));
+        clientSocket.send(sendPacket);
+        
         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
         clientSocket.receive(receivePacket);
-        String modifiedSentence = new String(receivePacket.getData());
+        String modifiedSentence = new String(receivePacket.getData(),"UTF-8");
         System.out.println("From server: " + modifiedSentence);
-
-        Gson gson = new Gson();
-        FileInfo fileInfo = new FileInfo();
-        java.lang.reflect.Type type = new TypeToken<FileInfo>() {
-        }.getType();
-        fileInfo = gson.fromJson(modifiedSentence.trim(), type);
+        
+        Gson gson=new Gson();
+        FileInfo fileInfo=new FileInfo();
+        java.lang.reflect.Type type=new TypeToken<FileInfo>(){}.getType();
+        fileInfo=gson.fromJson(modifiedSentence.trim(),type);
         if (fileInfo != null) {
-            System.out.println("File name: " + fileInfo.getFilename());
-            System.out.println("File size: " + fileInfo.getFileSize());
-            System.out.println("Pieces of file: " + fileInfo.getPiecesOfFile());
-            System.out.println("Last bytes length: " + fileInfo.getLastByteLength());
-        } else {
-            System.out.println("File name: null ");
+            System.out.println("= Ban can dowloard file: " + fileInfo.getFilename());
+            System.out.println("= Tong dung luong la: " + fileInfo.getFileSize()+"Byte");
+            //System.out.println("Tong so file nho: " + (fileInfo.getPiecesOfFile()-1));
+           
+        }
+        else
+        {
+        	  System.out.println("File name: file not fount in node");
         }
         // get file content
-
+       
         File fileReceive = new File(fileInfo.getDestinationDirectory());
-        bos = new BufferedOutputStream(
+        BufferedOutputStream bos = new BufferedOutputStream(
                 new FileOutputStream(fileReceive));
         // write pieces of file
-        for (int i = 0; i < (fileInfo.getPiecesOfFile() - 1); i++) {
-            receivePacket = new DatagramPacket(receiveData2, receiveData2.length,
-                    IPAddress, Integer.parseInt(fileChonDowloard.split("\t")[1]));
+        int m=fileInfo.getPiecesOfFile() - 1;
+        for (int i = 1; i <= m; i++) {
+            receivePacket = new DatagramPacket(receiveData2, receiveData2.length, 
+            		IPAddress, fileChonDowloard.getPort());
             clientSocket.receive(receivePacket);
-            System.out.println("Receiving file..." + (i + 1));
+            System.out.println("*************************Dowloard [ "+i*100/m+"% ]****************************");
             bos.write(receiveData2, 0, PIECES_OF_FILE_SIZE);
         }
         // write last bytes of file
-        receivePacket = new DatagramPacket(receiveData2, receiveData2.length,
-                IPAddress, Integer.parseInt(fileChonDowloard.split("\t")[1]));
+        receivePacket = new DatagramPacket(receiveData2, receiveData2.length, 
+        		IPAddress, fileChonDowloard.getPort());
         clientSocket.receive(receivePacket);
-        System.out.println("Receiving file Done...");
+        System.out.println("Dowloard file Done...");
+      //  System.out.println("Dowloard f...");
         bos.write(receiveData2, 0, fileInfo.getLastByteLength());
         bos.flush();
-        System.out.println("Done!");
-    }
+        bos.close();
+        System.out.println("===========================DONE================================");
+			}
 
-    public static void main(String[] args) {
-        try {
-            client = new Socket(InetAddress.getLocalHost().getHostName(), 1742);
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		System.out.println("================================================================================================");
+		System.out.println("                                       [CLIENT DANG CHAY]");
 
-            ObjectOutputStream oos = new ObjectOutputStream(client.getOutputStream());
-            oos.writeObject("1");
+		
+		System.out.println("================================================================================================");
+		System.out.print("nhap dia chi ip sever:");
+        Scanner rc=new Scanner(System.in);
+        severname=rc.nextLine();
+		
 
-            ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
+//		System.out.print("nh?p ð?a ch? ip Nodesever:");
+//       
+//        severnode=rc.nextLine();
+		Client client=new Client();
+		String chon="Y";
+		boolean kt=true;
+		do
+		{
+			
 
-            Object server_send = "";
-            list_file_info = new ArrayList<>();
+			System.out.println("Ban co muon tiep tuc [Y]:Yes or [N]:No ");
+			System.out.print("moi ban chon :");
+			Scanner sc=new Scanner(System.in);
+			chon=sc.nextLine();
+			if(!chon.equals("N")&& !chon.equals("Y"))
+			{
+				kt=true;
+				System.out.println("==========Thong bao============");
+				System.out.println("chi duoc nhap Y or N ");
+			}else
+			{
+				if(chon.equals("N"))
+				{
+					kt=false;
+					System.out.println("====== KET THÚC ============");
+				}
+				else
+				{
+					client.ConnectServer();
+					kt=true;
+					dsFile=new ArrayList<>();
+				}
+			}
+			
 
-            do {
-                server_send = ois.readObject().toString();
-
-                list_file_info.add(server_send);
-
-                if (server_send.equals("end")) {
-                    break;
-                }
-
-                oos.writeObject(server_send);
-            } while (!server_send.equals("end"));
-            
-            if(list_file_info.size()>1) {
-	            for (int i = 0; i < list_file_info.size()-1; i++) {
-	                System.out.println(i + ". " + list_file_info.get(i).toString());
-	            }
-	
-	            System.out.println("CHOOSE NUMBEER IN BEFORE FILE NAME TO DOWNLOAD FILE: ");
-	            input = new Scanner(System.in);
-	            int number = input.nextInt();
-	
-	            while (true) {
-	
-	                //TenFile fileChonDowloard=new TenFile();
-	                String file_choose = (String) list_file_info.get(number);
-	                System.out.println("Downloading file " + file_choose.split("\t")[2]);
-	                try {
-	                    ConnectNode(file_choose);
-	                } catch (Exception e) {
-	                    // TODO Auto-generated catch block
-	                    e.printStackTrace();
-	                }
-	
-	                number = Integer.parseInt(input.nextLine());
-	
-	            }
-            } else {
-            	System.out.println("SERVER ISN'T FILE!");
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
+		}while(kt);
+		
+	}
 
 }
