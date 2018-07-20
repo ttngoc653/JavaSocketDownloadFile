@@ -1,23 +1,16 @@
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
 import java.io.PrintStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Scanner;
 
 import com.google.gson.Gson;
@@ -25,12 +18,13 @@ import com.google.gson.reflect.TypeToken;
 
 public class Client {
 	private static final int PIECES_OF_FILE_SIZE = 1024 * 32;
-	private DatagramSocket clientSocket;
+	private static DatagramSocket clientSocket;
 	public static ArrayList<TenFile>dsFile=new ArrayList<>();
 	public static int portConnect=1742;
 	public static String severname="";
 	public static String severnode;
-	public void ConnectServer()
+	private static Scanner sc = new Scanner(System.in);;
+	public static void ConnectServer()
 	{
 		Node node1=new Node(1,0, "Client", null);
 		Gson gson=new Gson();
@@ -58,7 +52,7 @@ public class Client {
 			}
 			else
 			{
-				System.out.println("danh sach file rong!!");
+				System.out.println("File list is empty!!");
 			}
 			
 			} catch (UnknownHostException e) {
@@ -71,22 +65,22 @@ public class Client {
 		
 	}
 	
-	private void hienThiVaLuaChonDowloardFile() {
+	private static void hienThiVaLuaChonDowloardFile() {
 		// TODO Auto-generated method stub
 		System.out.println();
 		boolean kt=false;;
 
 		do{
-			System.out.println("================Hay lua chon file ban muon dowloard !!====================");
+			System.out.println("================ Please enter the following code to download: ====================");
 			{
 				for (int i = 0; i < dsFile.size(); i++) {
-					System.out.println("( "+String.valueOf(i+1)+"\t )---- FILE: "+dsFile.get(i).getTenfile());
+					System.out.format("( "+String.valueOf(i+1)+"\t )---- FILE: "+dsFile.get(i).getTenfile());
 				}
 			}
 
 			int chon;
-			System.out.print("Moi ban chon :");
-			Scanner sc=new Scanner(System.in);
+			System.out.print("Enter the code you want to download: ");
+			
 			chon=Integer.parseInt(sc.nextLine());
 			int size=dsFile.size();
 			if(chon>=1 && chon<=size)
@@ -94,9 +88,9 @@ public class Client {
 				kt=false;
 				TenFile fileChonDowloard=dsFile.get(chon-1);
 				
-				System.out.println("============================ THONG BAO =====================");
+				System.out.println("============================ NOTIFY =====================");
 
-				System.out.println("====> Dang Dowloard file "+fileChonDowloard.getTenfile());
+				System.out.println("====> Downloading file "+fileChonDowloard.getTenfile());
 				try {
 					ConnectNode(fileChonDowloard);
 				} catch (Exception e) {
@@ -107,17 +101,12 @@ public class Client {
 			else
 			{
 				kt=true;
-				System.out.println("gia tri ban duoc chon chi tu 1 den "+size);
-				System.out.println("xin hay chon lai !!!");
+				System.out.println("The file you selected is not valid. \nPlease enter the file number from 1 to "+size+" to download the file.");
 			}
 		}while(kt);
-		
-
-
-		
-	
+			
 	}
-	private void ConnectNode(TenFile fileChonDowloard) throws Exception {
+	private static void ConnectNode(TenFile fileChonDowloard) throws Exception {
 		// TODO Auto-generated method stub
 		 byte[] sendData = new byte[1024];
 		 byte[] receiveData = new byte[1024];
@@ -146,8 +135,8 @@ public class Client {
         java.lang.reflect.Type type=new TypeToken<FileInfo>(){}.getType();
         fileInfo=gson.fromJson(modifiedSentence.trim(),type);
         if (fileInfo != null) {
-            System.out.println("= Ban can dowloard file: " + fileInfo.getFilename());
-            System.out.println("= Tong dung luong la: " + fileInfo.getFileSize()+"Byte");
+            System.out.println("= Selected file: " + fileInfo.getFilename());
+            System.out.println("= Total file size: " + fileInfo.getFileSize()+"Byte");
             //System.out.println("Tong so file nho: " + (fileInfo.getPiecesOfFile()-1));
            
         }
@@ -173,7 +162,7 @@ public class Client {
         receivePacket = new DatagramPacket(receiveData2, receiveData2.length, 
         		IPAddress, fileChonDowloard.getPort());
         clientSocket.receive(receivePacket);
-        System.out.println("Dowloard file Done...");
+        System.out.println("Finished downloading the file...");
       //  System.out.println("Dowloard f...");
         bos.write(receiveData2, 0, fileInfo.getLastByteLength());
         bos.flush();
@@ -184,44 +173,36 @@ public class Client {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		System.out.println("================================================================================================");
-		System.out.println("                                       [CLIENT DANG CHAY]");
+		System.out.println("                                       [CLIENT RUNNING]");
 
 		
 		System.out.println("================================================================================================");
-		System.out.print("nhap dia chi ip sever:");
-        Scanner rc=new Scanner(System.in);
-        severname=rc.nextLine();
+		System.out.print("Enter the IP address of the server: ");
+        severname=sc.nextLine();
 		
-
-//		System.out.print("nh?p ð?a ch? ip Nodesever:");
-//       
-//        severnode=rc.nextLine();
-		Client client=new Client();
 		String chon="Y";
 		boolean kt=true;
 		do
 		{
 			
 
-			System.out.println("Ban co muon tiep tuc [Y]:Yes or [N]:No ");
-			System.out.print("moi ban chon :");
-			Scanner sc=new Scanner(System.in);
+			System.out.println("Do you want to continue (Y - Yes or N - No): ");
 			chon=sc.nextLine();
 			if(!chon.equals("N")&& !chon.equals("Y"))
 			{
 				kt=true;
-				System.out.println("==========Thong bao============");
-				System.out.println("chi duoc nhap Y or N ");
+				System.out.println("========== NOTIFY ============");
+				System.out.println("Only enter Y or N!");
 			}else
 			{
 				if(chon.equals("N"))
 				{
 					kt=false;
-					System.out.println("====== KET THÚC ============");
+					System.out.println("====== END ============");
 				}
 				else
 				{
-					client.ConnectServer();
+					ConnectServer();
 					kt=true;
 					dsFile=new ArrayList<>();
 				}

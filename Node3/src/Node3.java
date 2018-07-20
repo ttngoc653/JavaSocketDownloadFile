@@ -191,9 +191,20 @@ public class Node3 {
 			e.printStackTrace();
 		}   
 	}
+
+	private static void checkPortToClient() {
+		try {
+			serverSocket = new DatagramSocket(serverPort);
+			serverSocket.close();
+		} catch (Exception e) {
+			serverPort++;
+			checkPortToClient();
+		}
+	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-	
+		checkPortToClient();
+		
 		System.out.println("================================================================================================");
 		System.out.println("                                       [NODE 2 RUNNING]");
 		System.out.println("Port node: "+serverPort);

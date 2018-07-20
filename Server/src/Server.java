@@ -54,7 +54,7 @@ public class Server {
 	public static void server()
 	{
 		System.out.println("===================================================================================");
-		System.out.println("                          SERVER ĐANG CHẠY");
+		System.out.println("                          SERVER RUNNING");
 		//System.out.println("===================================================================================");
 		ServerSocket server = null;
 		Socket socket=null;
@@ -92,10 +92,10 @@ public class Server {
 					//them node vao danh sach node cua sever
 					//dsNode.add(node);
 					//hiển thi node da nhan dc
-					System.out.println("============================= THÔNG BÁO =======================================");
+					System.out.println("============================= NOTIFY =======================================");
 
-					System.out.println("=["+node.getTen().toUpperCase()+" ] ĐÃ TRUY CẬP HỆ THỐNG:");
-					System.out.println("=Đã nhận danh sách File từ "+node.getTen());
+					System.out.println("=["+node.getTen().toUpperCase()+" ] CONNECTED SERVER.");
+					System.out.println("= Received list file from "+node.getTen());
 					for(String i:node.getDanhsachFile())
 					{
 						System.out.println("File: "+i);
@@ -104,8 +104,8 @@ public class Server {
 				}
 				else//do client truy cap
 				{
-					System.out.println("================================= THONG BAO=====================================");
-					System.out.println(node.getTen().toUpperCase()+"["+sstClient+"]"+" Đã truy cập:");
+					System.out.println("================================= NOTIFY =====================================");
+					System.out.println(node.getTen().toUpperCase()+"["+sstClient+"]"+" connected.");
 					sstClient ++;
 					// server gui xac nhan ve client
 					PrintStream pstentruycap =new PrintStream(socket.getOutputStream());

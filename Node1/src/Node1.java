@@ -24,7 +24,7 @@ class SocketTestConnectThread extends Thread{
 	
 	public void run() {
 		ServerSocket server;
-		System.out.println("gone to thread");
+		// System.out.println("gone to thread");
 		try {
 			server = new ServerSocket(port);
 			while(true)
@@ -193,7 +193,8 @@ public class Node1 {
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-	
+		checkPortToClient();
+		
 		System.out.println("================================================================================================");
 		System.out.println("                                       [NODE 1 RUNNING]");
 		System.out.println("Port node: "+serverPort);
@@ -226,6 +227,15 @@ public class Node1 {
 			e.printStackTrace();
 		}
 		
+	}
+	private static void checkPortToClient() {
+		try {
+			serverSocket = new DatagramSocket(serverPort);
+			serverSocket.close();
+		} catch (Exception e) {
+			serverPort++;
+			checkPortToClient();
+		}
 	}
 
 }
