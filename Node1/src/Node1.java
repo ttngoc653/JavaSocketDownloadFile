@@ -52,10 +52,12 @@ public class Node1 {
 	private static PrintStream pstentruycap;
 	private static Gson gson;
 	
+	@SuppressWarnings("unused")
 	public static ArrayList<String> LayDanhSachFile(String dir)
 	{
 		ArrayList<String> ds=new ArrayList<>();
 		File folder = new File(dir);
+		if(!folder.exists()) folder.mkdirs();
 		File[] listOfFiles = folder.listFiles();
         if(listOfFiles.length>0)
         {
@@ -136,7 +138,7 @@ public class Node1 {
 	            //t?o gói tin và g?i Client
 	              byte[] sendData = new byte[1024];
 	              sourcePath="data\\node1\\"+sentence.trim();
-	              destinationDir="Socketdowloard\\"+sentence.trim();
+	              destinationDir = sentence.trim();
 	              String fileInfor=GetFileInfor();
 	              sendData = fileInfor.getBytes();
 	            DatagramPacket sendPacketdata = new DatagramPacket(sendData, sendData.length, IPAddress, clientPort);

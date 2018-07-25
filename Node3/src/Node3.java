@@ -56,6 +56,7 @@ public class Node3 {
 	{
 		ArrayList<String> ds=new ArrayList<>();
 		File folder = new File(dir);
+		if(!folder.exists()) folder.mkdirs();
 		File[] listOfFiles = folder.listFiles();
         if(listOfFiles.length>0)
         {
@@ -136,7 +137,7 @@ public class Node3 {
 	            //t?o gói tin và g?i Client
 	              byte[] sendData = new byte[1024];
 	              sourcePath="data\\node2\\"+sentence.trim();
-	              destinationDir="Socketdowloard\\"+sentence.trim();
+	              destinationDir=sentence.trim();
 	              String fileInfor=GetFileInfor();
 	              sendData = fileInfor.getBytes();
 	            DatagramPacket sendPacketdata = new DatagramPacket(sendData, sendData.length, IPAddress, clientPort);
